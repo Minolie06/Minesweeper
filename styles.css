@@ -1,0 +1,57 @@
+@import url("reset.css");
+@import url('https://fonts.googleapis.com/css2?family=Inconsolata&display=swap');
+
+body {
+    font-family: 'Inconsolata', monospace;
+    text-transform: uppercase;
+    margin-top: 20px;
+    text-align: center;
+}
+
+h1 {
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.board {
+    border: 1px solid #333;
+    display:inline-block;
+}
+
+.row {
+    font-size: 0px;
+}
+
+.col {
+    display: inline-block;
+    width: 50px;
+    height: 50px;
+    background-color: #eee;
+    border-right: 1px solid white;
+    border-bottom: 1px solid white;
+    vertical-align: top;
+    color: black;
+    font-size: 20px;
+    line-height: 50px;
+}
+
+.col:last-child {
+    border-right: none;
+}
+
+.row:last-child .col {
+    border-bottom: none;
+}
+
+.col.hidden {
+    background-color: #59aec7;
+    cursor: pointer;
+}
+
+.col.hidden:hover {
+    background-color: #eee;
+}
+
+.col.hidden.mine {
+    background-color: red;
+}
