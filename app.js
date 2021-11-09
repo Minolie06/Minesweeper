@@ -3,7 +3,8 @@ const COLORS = ['rgba(0,0,0,0)', 'blue', 'green', 'red', 'darkblue', 'brown', 'd
 const SETTINGS = {
     'ROWS': 16,
     'COLS': 16,
-    'MINES': 40
+    'MINES': 40,
+    'READY': false
 }
 const EASY = [8, 8, 10];
 const MEDIUM = [16, 16, 40];
@@ -20,12 +21,21 @@ function chooseDifficulty([rows, cols, mines]) {
     SETTINGS.MINES = mines
 }
 
-function startNewGame() {
+function initGame() {
+    SETTINGS.READY = false;
     $board.empty();
     createBoard(SETTINGS.ROWS, SETTINGS.COLS);
-    addMinesToBoard(SETTINGS.MINES);
+    $board.one('click', '.col', function() {
+        startGame($(this));
+    })
+}
+
+function startGame(firstCell) {
+    addMinesToBoard(SETTINGS.MINES, firstCell);
     countAdjacentMines();
     displayMineCount();
+    SETTINGS.READY = true;
+    firstCell.click();
 }
 
 function createBoard(rows, cols) {
@@ -43,9 +53,9 @@ function createBoard(rows, cols) {
     }
 }
 
-function addMinesToBoard(minesNumber) {
+function addMinesToBoard(minesNumber, firstCell = null) {
     for (let i = 0; i < minesNumber; i++) {
-        let $emptyCells = $('.hidden').not('.mine');
+        let $emptyCells = $('.hidden').not('.mine').not(firstCell);
         let $cell = $($emptyCells[Math.round(Math.random()*$emptyCells.length)]);
         $cell.addClass('mine');
     }    
@@ -133,7 +143,7 @@ function gameOver(isWin) {
     $('.col.mine').removeClass('hidden');
     setTimeout(function() {
         alert(message);
-        startNewGame();
+        initGame();
     }, 250);
 }
 
@@ -146,8 +156,9 @@ function displayMineCount() {
 
 // EVENT LISTENERS: GAME
 $board.on('click', '.col.hidden', function() {
+    if (!SETTINGS.READY) return;
     const $cell = $(this);
-    if ($cell.hasClass('flag')) return;
+    if ($cell.hasClass('flag') || $cell.hasClass('first')) return;
     if ($cell.hasClass('mine')) {
         $cell.addClass('active');
         gameOver(false);
@@ -182,21 +193,23 @@ $board.on('dblclick', '.col', function() {
     return false;
 })
 
+
 //EVENT LISTENERS: CONTROL BUTTONS
 $(".difficulty button").on('click', function() {
     let difficulty = $(this).text().toUpperCase();
     chooseDifficulty(eval(difficulty));
-    startNewGame();
+    initGame();
     display("game");
 })
 
 $("#restart").on('click', function() {
-    startNewGame();
+    initGame();
     display("game");
 })
 
 $("#choose-difficulty").on('click', function() {
     display("difficulty");
 })
+
 
 display("difficulty");
