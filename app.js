@@ -25,6 +25,7 @@ function initGame() {
     SETTINGS.READY = false;
     $board.empty();
     createBoard(SETTINGS.ROWS, SETTINGS.COLS);
+    displayMineCount();
     $board.one('click', '.col', function() {
         startGame($(this));
     })
@@ -33,7 +34,6 @@ function initGame() {
 function startGame(firstCell) {
     addMinesToBoard(SETTINGS.MINES, firstCell);
     countAdjacentMines();
-    displayMineCount();
     SETTINGS.READY = true;
     firstCell.click();
 }
