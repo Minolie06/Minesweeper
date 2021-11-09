@@ -135,8 +135,8 @@ function revealAdjacentCells($cell) {
 
 function gameOver(isWin) {
     $board.addClass('locked');
-    let message = isWin ? 'YOU WON!' : 'BOOM! YOU LOST...';
-    let icon = isWin ? 'fa fa-flag' : 'fa fa-bomb';
+    let message = isWin ? 'YOU WON! :)' : 'BOOM! YOU LOST...';
+    let icon = isWin ? 'fas fa-flag' : 'fas fa-bomb';
     $('.col.mine').empty().append(
         $('<i>').addClass(icon)
     );
