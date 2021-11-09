@@ -102,6 +102,28 @@ function revealCell($originalCell) {
     helper($originalCell);
 }
 
+function revealAdjacentCells($cell) {
+    if ($cell.hasClass('hidden')) return;
+    let mineCount = parseInt($cell.text());
+    if (!mineCount) return;
+
+    let flagCount = 0;
+    let adjacentCells = getAdjacentCells($cell);
+    let cellsToClick = [];
+    adjacentCells.forEach(adjacentCell => {
+        if (adjacentCell.hasClass('flag')) {
+            flagCount++;
+            return
+        }
+        cellsToClick.push(adjacentCell);
+    })
+    if (flagCount != mineCount) return;
+
+    cellsToClick.forEach(cellToClick => {
+        cellToClick.click();
+    })
+}
+
 function gameOver(isWin) {
     let message = isWin ? 'YOU WON!' : 'BOOM!';
     let icon = isWin ? 'fa fa-flag' : 'fa fa-bomb';
@@ -152,6 +174,11 @@ $board.on('contextmenu', '.col.hidden', function() {
     $cell.not('.flag').children().remove();
     displayMineCount();
 
+    return false;
+})
+
+$board.on('dblclick', '.col', function() {
+    revealAdjacentCells($(this));
     return false;
 })
 
