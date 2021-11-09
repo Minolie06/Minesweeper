@@ -1,9 +1,18 @@
 const $board = $('#board');
-const ROWS = 10;
-const COLS = 10;
+const ROWS = 8;
+const COLS = 8;
+const MINES = 10;
+const COLORS = ['rgba(0,0,0,0)', 'blue', 'green', 'red', 'darkblue', 'brown', 'darkcyan', 'black', 'gray']
+
+function startNewGame() {
+    $board.empty();
+    createBoard(ROWS, COLS);
+    addMinesToBoard(MINES);
+    countAdjacentMines();
+    displayMineCount();
+}
 
 function createBoard(rows, cols) {
-    $board.empty();
     for (let i = 0; i < rows; i++) {
         const $row = $('<div>')
         .addClass('row')
@@ -12,93 +21,122 @@ function createBoard(rows, cols) {
             .addClass('col hidden')
             .attr('data-col', j)
             .attr('data-row', i);
-            if (Math.random() < 0.1) {
-                $col.addClass('mine');
-            }
             $row.append($col);
         }
         $board.append($row);
     }
 }
 
-function restart() {
-    createBoard(ROWS, COLS);
+function addMinesToBoard(minesNumber) {
+    for (let i = 0; i < minesNumber; i++) {
+        let $emptyCells = $('.hidden').not('.mine');
+        let $cell = $($emptyCells[Math.round(Math.random()*$emptyCells.length)]);
+        $cell.addClass('mine');
+    }    
+}
+
+function countAdjacentMines() {
+    const $emptyCells = $('.hidden').not('.mine');
+    $emptyCells.each(function() {
+        const $cell = $(this);
+        let mineCount = 0;
+        getAdjacentCells($cell).forEach($adjacentCell => {
+            if ($adjacentCell.hasClass('mine')) {
+                mineCount++;
+            }
+        });
+        if (mineCount) $cell.text(mineCount).css('color', COLORS[mineCount]);
+    });
+}
+
+function getAdjacentCells(cell) {
+    const originalI = cell.data('row');
+    const originalJ = cell.data('col');
+    let adjacentCells = [];
+
+    for (let directionI = -1; directionI <= 1; directionI++) {
+        const i = originalI + directionI;
+        if (i >= ROWS || i < 0) continue;
+
+        for (let directionJ = -1; directionJ <= 1; directionJ++) {
+            const j = originalJ + directionJ;
+            if (j>= COLS || j < 0) continue;
+            if (directionI == 0 && directionJ == 0) continue;
+
+            const $adjacentCell = $(`.col[data-row=${i}][data-col=${j}]`);
+            adjacentCells.push($adjacentCell);
+        }
+    }
+    return adjacentCells;
+}
+
+function revealCell($originalCell) {
+
+    function helper($cell) {
+        if (!$cell.hasClass('hidden') || $cell.hasClass('mine')) return;
+        $cell.removeClass('hidden');
+        
+        if ($cell.text()) return;  
+        
+        getAdjacentCells($cell).forEach($adjacentCell => {
+            setTimeout(() => {helper($adjacentCell)}, 10);
+        });
+    }
+
+    helper($originalCell);
 }
 
 function gameOver(isWin) {
-    let message = isWin ? 'YOU WON!' : 'YOU LOST!';
+    let message = isWin ? 'YOU WON!' : 'BOOM!';
     let icon = isWin ? 'fa fa-flag' : 'fa fa-bomb';
-    $('.col.mine').append(
+    $('.col.mine').empty().append(
         $('<i>').addClass(icon)
     );
-    $('.col').not('mine').removeClass('hidden');
+    $('.col.mine').removeClass('hidden');
     setTimeout(function() {
         alert(message);
-        restart();
-    }, 500);
+        startNewGame();
+    }, 250);
 }
 
-function reveal(originalI, originalJ) {
-    const seen = {};
-
-    function helper(i, j) {
-        if (i >= ROWS || j>= COLS || i < 0 || j < 0) return;
-
-        const key = `${i} ${j}`;
-        if (seen[key]) return;
-
-        const $cell = $(`.col.hidden[data-row=${i}][data-col=${j}]`);
-        const mineCount = getMineCount(i,j); //todo: implement
-
-        if (!$cell.hasClass('hidden') || $cell.hasClass('mine')) return;
-
-        $cell.removeClass('hidden');
-
-        //todo : set the mine count when creating the board?
-        if (mineCount) {
-            $cell.text(mineCount);
-            return;
-        }
-
-        //call helper on adjacent cells
-        for (let directionI = -1; directionI <= 1; directionI++) {
-            for (let directionJ = -1; directionJ <= 1; directionJ++) {
-                helper(i+directionI,j+directionJ);
-            }
-        }
-    }
-    helper(originalI, originalJ);
-}
-
-function getMineCount(i, j) {
-    let count = 0;
-    for (let directionI = -1; directionI <= 1; directionI++) {
-        for (let directionJ = -1; directionJ <= 1; directionJ++) {
-            const newI = i + directionI;
-            const newJ = j + directionJ;
-            if (newI > ROWS || newJ> COLS || newI < 0 || newJ < 0) continue;
-            const $cell = $(`.col.hidden[data-row=${newI}][data-col=${newJ}]`);
-            if ($cell.hasClass('mine')) count++;
-        }
-    }
-    console.log(count);
-    return count;
-
+function displayMineCount() {
+    $('#displayMineCount').text(
+        MINES - $('.col.hidden.flag').length
+    );
 }
 
 
 // EVENT LISTENERS
 $board.on('click', '.col.hidden', function() {
     const $cell = $(this);
-    const row = $cell.data('row');
-    const col = $cell.data('col');
+    if ($cell.hasClass('flag')) return;
     if ($cell.hasClass('mine')) {
+        $cell.addClass('active');
         gameOver(false);
     } else {
-        reveal(row, col);
+        revealCell($cell);
         const isGameOver = $('.col.hidden').length === $('.col.mine').length;
         if (isGameOver) gameOver(true);
     }
 })
 
-restart();
+$board.on('contextmenu', function() {
+    return false;
+})
+
+$board.on('contextmenu', '.col.hidden', function() {
+    const $cell = $(this);
+    $cell.toggleClass('flag');
+    $cell.filter('.flag').append(
+        $('<i>').addClass('fa fa-flag')
+        .css('color', 'black')
+        .css('font-size', '20px')
+        .css('line-height', '30px')
+    );
+    $cell.not('.flag').children().remove();
+    displayMineCount();
+
+    return false;
+})
+
+startNewGame();

@@ -1,6 +1,10 @@
 @import url("reset.css");
 @import url('https://fonts.googleapis.com/css2?family=Inconsolata&display=swap');
 
+* {
+    box-sizing: border-box;
+}
+
 body {
     font-family: 'Inconsolata', monospace;
     text-transform: uppercase;
@@ -11,10 +15,17 @@ body {
 h1 {
     font-size: 2rem;
     font-weight: bold;
+    margin-bottom: 10rem;
+}
+
+.display {
+    margin: 1rem 0;
+    font-weight: bold;
+    font-size: 20px;
 }
 
 .board {
-    border: 1px solid #333;
+    border: 2px solid #333;
     display:inline-block;
 }
 
@@ -24,15 +35,16 @@ h1 {
 
 .col {
     display: inline-block;
-    width: 50px;
-    height: 50px;
+    width: 30px;
+    height: 30px;
     background-color: #eee;
     border-right: 1px solid white;
     border-bottom: 1px solid white;
     vertical-align: top;
     color: black;
     font-size: 20px;
-    line-height: 50px;
+    font-weight: bold;
+    line-height: 30px;
 }
 
 .col:last-child {
@@ -46,12 +58,13 @@ h1 {
 .col.hidden {
     background-color: #59aec7;
     cursor: pointer;
+    font-size: 0px;
 }
 
 .col.hidden:hover {
-    background-color: #eee;
+    background-color: #b1d5df;
 }
 
-.col.hidden.mine {
+.col.mine.active {
     background-color: red;
 }
