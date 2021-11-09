@@ -22,19 +22,14 @@ function initGame() {
     SETTINGS.READY = false;
     $('#results').text('');
     $board.empty();
+
     createBoard(SETTINGS.ROWS, SETTINGS.COLS);
     displayMineCount();
+
     $board.removeClass('locked');
     $board.one('click', '.col', function() {
         startGame($(this));
     })
-}
-
-function startGame(firstCell) {
-    addMinesToBoard(SETTINGS.MINES, firstCell);
-    countAdjacentMines();
-    SETTINGS.READY = true;
-    firstCell.click();
 }
 
 function createBoard(rows, cols) {
@@ -52,9 +47,16 @@ function createBoard(rows, cols) {
     }
 }
 
-function addMinesToBoard(minesNumber, firstCell = null) {
+function startGame($firstCell) {
+    addMinesToBoard(SETTINGS.MINES, $firstCell);
+    countAdjacentMines();
+    SETTINGS.READY = true;
+    $firstCell.click();
+}
+
+function addMinesToBoard(minesNumber, $firstCell = null) {
     for (let i = 0; i < minesNumber; i++) {
-        let $emptyCells = $('.hidden').not('.mine').not(firstCell);
+        let $emptyCells = $('.hidden').not('.mine').not($firstCell);
         let $cell = $($emptyCells[Math.round(Math.random()*$emptyCells.length)]);
         $cell.addClass('mine');
     }    
@@ -64,19 +66,16 @@ function countAdjacentMines() {
     const $emptyCells = $('.hidden').not('.mine');
     $emptyCells.each(function() {
         const $cell = $(this);
-        let mineCount = 0;
-        getAdjacentCells($cell).forEach($adjacentCell => {
-            if ($adjacentCell.hasClass('mine')) {
-                mineCount++;
-            }
-        });
+        const mineCount = getAdjacentCells($cell).reduce(function(partialCount, adjacentCell) {
+            return partialCount + ((adjacentCell.hasClass('mine')) ? 1 : 0)
+        }, 0)
         if (mineCount) $cell.text(mineCount).css('color', COLORS[mineCount]);
     });
 }
 
-function getAdjacentCells(cell) {
-    const originalI = cell.data('row');
-    const originalJ = cell.data('col');
+function getAdjacentCells($cell) {
+    const originalI = $cell.data('row');
+    const originalJ = $cell.data('col');
     let adjacentCells = [];
 
     for (let directionI = -1; directionI <= 1; directionI++) {
@@ -113,19 +112,15 @@ function revealCell($originalCell) {
 
 function revealAdjacentCells($cell) {
     if ($cell.hasClass('hidden')) return;
-    let mineCount = parseInt($cell.text());
+    const mineCount = parseInt($cell.text());
     if (!mineCount) return;
 
-    let flagCount = 0;
-    let adjacentCells = getAdjacentCells($cell);
-    let cellsToClick = [];
-    adjacentCells.forEach(adjacentCell => {
-        if (adjacentCell.hasClass('flag')) {
-            flagCount++;
-            return
-        }
-        cellsToClick.push(adjacentCell);
-    })
+    const adjacentCells = getAdjacentCells($cell);
+    const cellsToClick = adjacentCells.filter((adjacentCell) => {
+        return !(adjacentCell.hasClass('flag'));
+    });
+    const flagCount = adjacentCells.length - cellsToClick.length;
+
     if (flagCount != mineCount) return;
 
     cellsToClick.forEach(cellToClick => {
@@ -150,12 +145,9 @@ function displayMineCount() {
     );
 }
 
-
-// EVENT LISTENERS: GAME
-$board.on('click', '.col.hidden', function() {
+function checkCell($cell) {
     if (!SETTINGS.READY) return;
-    const $cell = $(this);
-    if ($cell.hasClass('flag') || $cell.hasClass('first')) return;
+    if ($cell.hasClass('flag')) return;
     if ($cell.hasClass('mine')) {
         $cell.addClass('active');
         gameOver(false);
@@ -164,14 +156,9 @@ $board.on('click', '.col.hidden', function() {
         const isGameOver = $('.col.hidden').length === $('.col.mine').length;
         if (isGameOver) gameOver(true);
     }
-})
+}
 
-$board.on('contextmenu', function() {
-    return false;
-})
-
-$board.on('contextmenu', '.col.hidden', function() {
-    const $cell = $(this);
+function setFlag($cell) {
     $cell.toggleClass('flag');
     $cell.filter('.flag').append(
         $('<i>').addClass('fa fa-flag')
@@ -181,13 +168,23 @@ $board.on('contextmenu', '.col.hidden', function() {
     );
     $cell.not('.flag').children().remove();
     displayMineCount();
+}
 
+// EVENT LISTENERS: GAME
+$board.on('click', '.col.hidden', function() {
+    checkCell($(this));
+})
+
+$board.on('contextmenu', function() {
     return false;
+})
+
+$board.on('contextmenu', '.col.hidden', function() {
+    setFlag($(this));
 })
 
 $board.on('dblclick', '.col', function() {
     revealAdjacentCells($(this));
-    return false;
 })
 
 
@@ -207,6 +204,5 @@ $("#restart").on('click', function() {
 $("#choose-difficulty").on('click', function() {
     display("difficulty");
 })
-
 
 display("difficulty");
