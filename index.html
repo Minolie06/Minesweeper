@@ -13,10 +13,23 @@
 </head>
 <body>
     <h1>Minesweeper</h1>
-    <div class="display">
-        <span id="displayMineCount">15</span>
-        <i class="fa fa-bomb"></i>
+    <div class="display difficulty">
+        <p>Choose your difficulty</p>
+        <button id="difficulty-easy">Easy</button>
+        <button id="difficulty-medium">Medium</button>
+        <button id="difficulty-hard">Hard</button>
     </div>
-    <div id="board" class='board'></div>
+    <div class="display game">
+        <div>
+            <span id="displayMineCount"></span>
+            <i class="fa fa-bomb"></i>
+        </div>
+        <div id="board" class='board'></div>
+        <div>
+            <button id="restart">Restart</button>
+            <button id="choose-difficulty">Change difficulty</button>
+
+        </div>
+    </div>
 </body>
 </html>

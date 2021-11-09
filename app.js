@@ -1,13 +1,29 @@
 const $board = $('#board');
-const ROWS = 8;
-const COLS = 8;
-const MINES = 10;
 const COLORS = ['rgba(0,0,0,0)', 'blue', 'green', 'red', 'darkblue', 'brown', 'darkcyan', 'black', 'gray']
+const SETTINGS = {
+    'ROWS': 16,
+    'COLS': 16,
+    'MINES': 40
+}
+const EASY = [8, 8, 10];
+const MEDIUM = [16, 16, 40];
+const HARD = [16, 32, 99];
+
+function display(choice) {
+    $(".display").hide();
+    $(`.display.${choice}`).show()
+}
+
+function chooseDifficulty([rows, cols, mines]) {
+    SETTINGS.ROWS = rows;
+    SETTINGS.COLS = cols;
+    SETTINGS.MINES = mines
+}
 
 function startNewGame() {
     $board.empty();
-    createBoard(ROWS, COLS);
-    addMinesToBoard(MINES);
+    createBoard(SETTINGS.ROWS, SETTINGS.COLS);
+    addMinesToBoard(SETTINGS.MINES);
     countAdjacentMines();
     displayMineCount();
 }
@@ -56,11 +72,11 @@ function getAdjacentCells(cell) {
 
     for (let directionI = -1; directionI <= 1; directionI++) {
         const i = originalI + directionI;
-        if (i >= ROWS || i < 0) continue;
+        if (i >= SETTINGS.ROWS || i < 0) continue;
 
         for (let directionJ = -1; directionJ <= 1; directionJ++) {
             const j = originalJ + directionJ;
-            if (j>= COLS || j < 0) continue;
+            if (j>= SETTINGS.COLS || j < 0) continue;
             if (directionI == 0 && directionJ == 0) continue;
 
             const $adjacentCell = $(`.col[data-row=${i}][data-col=${j}]`);
@@ -101,12 +117,12 @@ function gameOver(isWin) {
 
 function displayMineCount() {
     $('#displayMineCount').text(
-        MINES - $('.col.hidden.flag').length
+        SETTINGS.MINES - $('.col.hidden.flag').length
     );
 }
 
 
-// EVENT LISTENERS
+// EVENT LISTENERS: GAME
 $board.on('click', '.col.hidden', function() {
     const $cell = $(this);
     if ($cell.hasClass('flag')) return;
@@ -139,4 +155,21 @@ $board.on('contextmenu', '.col.hidden', function() {
     return false;
 })
 
-startNewGame();
+//EVENT LISTENERS: CONTROL BUTTONS
+$(".difficulty button").on('click', function() {
+    let difficulty = $(this).text().toUpperCase();
+    chooseDifficulty(eval(difficulty));
+    startNewGame();
+    display("game");
+})
+
+$("#restart").on('click', function() {
+    startNewGame();
+    display("game");
+})
+
+$("#choose-difficulty").on('click', function() {
+    display("difficulty");
+})
+
+display("difficulty");
