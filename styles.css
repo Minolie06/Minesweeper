@@ -93,3 +93,7 @@ button {
 .col.mine.active {
     background-color: red;
 }
+
+.col.mine {
+    background-color: red;;
+}

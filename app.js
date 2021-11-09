@@ -89,7 +89,7 @@ function getAdjacentCells(cell) {
 function revealCell($originalCell) {
 
     function helper($cell) {
-        if (!$cell.hasClass('hidden') || $cell.hasClass('mine')) return;
+        if (!$cell.hasClass('hidden') || $cell.hasClass('mine') || $cell.hasClass('flag')) return;
         $cell.removeClass('hidden');
         
         if ($cell.text()) return;  
