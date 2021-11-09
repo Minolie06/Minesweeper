@@ -10,12 +10,17 @@ body {
     text-transform: uppercase;
     margin-top: 20px;
     text-align: center;
+    font-weight: bold;
 }
 
 h1 {
     font-size: 2rem;
-    font-weight: bold;
-    margin-bottom: 10rem;
+}
+
+.results {
+    margin: 5rem 0;
+    font-size: 1.5rem;
+    min-height: 1.5rem;
 }
 
 button {
@@ -61,6 +66,7 @@ button {
     font-size: 20px;
     font-weight: bold;
     line-height: 30px;
+    pointer-events: inherit;
 
     /* unselectable */
     cursor: default;
@@ -95,5 +101,9 @@ button {
 }
 
 /* .col.mine {
-    background-color: red;;
+    background-color: red;
 } */
+
+.board.locked {
+    pointer-events: none;
+}

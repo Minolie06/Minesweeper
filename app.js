@@ -1,9 +1,6 @@
 const $board = $('#board');
 const COLORS = ['rgba(0,0,0,0)', 'blue', 'green', 'red', 'darkblue', 'brown', 'darkcyan', 'black', 'gray']
 const SETTINGS = {
-    'ROWS': 16,
-    'COLS': 16,
-    'MINES': 40,
     'READY': false
 }
 const EASY = [8, 8, 10];
@@ -23,9 +20,11 @@ function chooseDifficulty([rows, cols, mines]) {
 
 function initGame() {
     SETTINGS.READY = false;
+    $('#results').text('');
     $board.empty();
     createBoard(SETTINGS.ROWS, SETTINGS.COLS);
     displayMineCount();
+    $board.removeClass('locked');
     $board.one('click', '.col', function() {
         startGame($(this));
     })
@@ -135,16 +134,14 @@ function revealAdjacentCells($cell) {
 }
 
 function gameOver(isWin) {
-    let message = isWin ? 'YOU WON!' : 'BOOM!';
+    $board.addClass('locked');
+    let message = isWin ? 'YOU WON!' : 'BOOM! YOU LOST...';
     let icon = isWin ? 'fa fa-flag' : 'fa fa-bomb';
     $('.col.mine').empty().append(
         $('<i>').addClass(icon)
     );
     $('.col.mine').removeClass('hidden');
-    setTimeout(function() {
-        alert(message);
-        initGame();
-    }, 250);
+    $('#results').text(message);
 }
 
 function displayMineCount() {
