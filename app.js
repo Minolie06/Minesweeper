@@ -1,7 +1,10 @@
 const $board = $('#board');
 const COLORS = ['rgba(0,0,0,0)', 'blue', 'green', 'red', 'darkblue', 'brown', 'darkcyan', 'black', 'gray']
 const SETTINGS = {
-    'READY': false
+    'READY': false,
+    'ROWS': 0,
+    'COLS': 0,
+    'MINES': 0,
 }
 const EASY = [8, 8, 10];
 const MEDIUM = [16, 16, 40];
