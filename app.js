@@ -75,7 +75,7 @@ function countAdjacentMines() {
 
 function getAdjacentCells($cell) {
     const originalI = $cell.data('row');
-    const originalJ = $cell.data('col');
+    const originalJ = $cell.data('col'); 
     let adjacentCells = [];
 
     for (let directionI = -1; directionI <= 1; directionI++) {
