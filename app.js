@@ -18,7 +18,7 @@ function display(choice) {
 function chooseDifficulty([rows, cols, mines]) {
     SETTINGS.ROWS = rows;
     SETTINGS.COLS = cols;
-    SETTINGS.MINES = mines
+    SETTINGS.MINES = mines;
 }
 
 function initGame() {
@@ -30,9 +30,6 @@ function initGame() {
     displayMineCount();
 
     $board.removeClass('locked');
-    $board.one('click', '.col', function() {
-        startGame($(this));
-    })
 }
 
 function createBoard(rows, cols) {
@@ -175,7 +172,11 @@ function setFlag($cell) {
 
 // EVENT LISTENERS: GAME
 $board.on('click', '.col.hidden', function() {
-    checkCell($(this));
+    if (SETTINGS.READY) {
+        checkCell($(this));
+    } else {
+        startGame($(this));
+    }
 })
 
 $board.on('contextmenu', function() {
