@@ -162,7 +162,7 @@ function setFlag($cell) {
     $cell.toggleClass('flag');
     $cell.filter('.flag').append(
         $('<i>').addClass('fas fa-flag')
-        .css('color', 'var(--text-color')
+        .css('color', 'var(--bg-color')
         .css('font-size', '20px')
         .css('line-height', '30px')
     );

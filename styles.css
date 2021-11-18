@@ -26,14 +26,14 @@ body {
 body.dark {
     --bg-color: #222;
     --cell-color: #333;
-    --text-color: white;
+    --text-color: #ddd;
     --accent-color: #03a9f4;
     --hover-color: #0382bb;
     --btn-color: var(--bg-color);
 
     --color1: #06adf9;
-    --color2: #72ff72;
-    --color3: #ff1a1a;
+    --color2: #33d733;
+    --color3: #ff6d6d;
     --color4: #899dff;
     --color5: #d76363;
     --color6: #6bffff;
