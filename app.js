@@ -69,7 +69,7 @@ function countAdjacentMines() {
         const mineCount = getAdjacentCells($cell).reduce(function(partialCount, adjacentCell) {
             return partialCount + ((adjacentCell.hasClass('mine')) ? 1 : 0)
         }, 0)
-        if (mineCount) $cell.text(mineCount).css('color', COLORS[mineCount]);
+        if (mineCount) $cell.text(mineCount).css('color', `var(--color${mineCount})`);
     });
 }
 
@@ -161,8 +161,8 @@ function checkCell($cell) {
 function setFlag($cell) {
     $cell.toggleClass('flag');
     $cell.filter('.flag').append(
-        $('<i>').addClass('fa fa-flag')
-        .css('color', 'black')
+        $('<i>').addClass('fas fa-flag')
+        .css('color', 'var(--text-color')
         .css('font-size', '20px')
         .css('line-height', '30px')
     );
@@ -203,10 +203,22 @@ $(".difficulty button").on('click', function() {
 $("#restart").on('click', function() {
     initGame();
     display("game");
-})
+});
 
 $("#choose-difficulty").on('click', function() {
     display("difficulty");
-})
+});
 
-display("difficulty");
+$('#theme').on('change', function() {
+	$('body').toggleClass('dark');
+	localStorage.setItem('darkModeStatus', $('#theme').prop('checked'));
+});
+
+$(document).ready(function(){
+	if(localStorage.getItem('darkModeStatus') == "true") {
+		$('body').addClass('dark');
+		$('#theme').prop('checked', 'checked');
+	}
+    display("difficulty");
+});
+
